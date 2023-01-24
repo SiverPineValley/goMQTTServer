@@ -1,6 +1,6 @@
 package broker
 
-var usageStr = `
+var usage = `
 Usage: goMQTTServer [options]
 Broker Options:
     -w,  --worker <number>            Worker num to process message, prefer (client num)/10. (default 1024)

@@ -3,10 +3,10 @@ package broker
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/BurntSushi/toml"
 	"io/ioutil"
 	"os"
 
@@ -59,7 +59,7 @@ var (
 )
 
 func showHelp() {
-	fmt.Printf("%s\n", usageStr)
+	fmt.Printf("%s\n", usage)
 	os.Exit(0)
 }
 
@@ -113,7 +113,7 @@ func ConfigureConfig(args []string) (*Config, error) {
 	})
 
 	if configFile != "" {
-		tmpConfig, e := LoadConfig(configFile)
+		tmpConfig, e := loadConfig(configFile)
 		if e != nil {
 			return nil, e
 		} else {
@@ -133,23 +133,13 @@ func ConfigureConfig(args []string) (*Config, error) {
 
 }
 
-func LoadConfig(filename string) (*Config, error) {
-
-	content, err := ioutil.ReadFile(filename)
+func loadConfig(filename string) (config *Config, err error) {
+	config = new(Config)
+	_, err = toml.DecodeFile(filename, &config)
 	if err != nil {
-		// log.Error("Read config file error: ", zap.Error(err))
 		return nil, err
 	}
-	// log.Info(string(content))
-
-	var config Config
-	err = json.Unmarshal(content, &config)
-	if err != nil {
-		// log.Error("Unmarshal config file error: ", zap.Error(err))
-		return nil, err
-	}
-
-	return &config, nil
+	return
 }
 
 func (config *Config) check() error {
@@ -187,7 +177,7 @@ func (config *Config) check() error {
 	return nil
 }
 
-func NewTLSConfig(tlsInfo TLSInfo) (*tls.Config, error) {
+func newTLSConfig(tlsInfo TLSInfo) (*tls.Config, error) {
 
 	cert, err := tls.LoadX509KeyPair(tlsInfo.CertFile, tlsInfo.KeyFile)
 	if err != nil {

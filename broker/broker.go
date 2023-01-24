@@ -87,7 +87,7 @@ func NewBroker(config *Config) (*Broker, error) {
 	}
 
 	if b.config.TlsPort != "" {
-		tlsconfig, err := NewTLSConfig(b.config.TlsInfo)
+		tlsconfig, err := newTLSConfig(b.config.TlsInfo)
 		if err != nil {
 			log.Error("new tlsConfig error", zap.Error(err))
 			return nil, err
